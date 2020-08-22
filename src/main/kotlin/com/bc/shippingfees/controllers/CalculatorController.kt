@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class UserController {
-
-
+class CalculatorController {
     @GetMapping("/shipping-cost/{idCompany}/{idProduct}/{distance}")
     fun shippiningCost(@PathVariable idCompany: Long, @PathVariable idProduct: Long, @PathVariable distance: Long): outPutData {
         val company = CompaniesMock.companies.find { company -> company.idCompany == idCompany }
@@ -26,6 +24,4 @@ class UserController {
     data class outPutData(
             var cost: Double
     )
-
-
 }
