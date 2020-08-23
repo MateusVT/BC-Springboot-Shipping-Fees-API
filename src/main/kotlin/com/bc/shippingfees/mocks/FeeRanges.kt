@@ -1,4 +1,4 @@
-package com.bc.shippingfees.mock
+package com.bc.shippingfees.mocks
 
 import Models.FeesRange
 

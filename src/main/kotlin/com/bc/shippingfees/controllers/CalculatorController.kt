@@ -1,34 +1,90 @@
 package com.bc.shippingfees.controllers
 
-import com.bc.shippingfees.mock.CompaniesMock
-import com.bc.shippingfees.mock.FeeRangesMock
-import com.bc.shippingfees.mock.ProductsMock
+import Models.Product
+import com.bc.shippingfees.mocks.CompaniesMock
+import com.bc.shippingfees.mocks.FeeRangesMock
+import com.bc.shippingfees.mocks.ProductsMock
 import com.bc.shippingfees.utils.calculateFee
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/shipping-costs")
 class CalculatorController {
-    //http://localhost:9090/shipping-cost?idProduct=10&distance=1
-    @GetMapping("/shipping-cost")
-    fun shippiningCosts(@RequestParam(name = "idProduct") idProduct: Long, @RequestParam(name = "distance") distance: Long): List<budgetsOutput> {
+
+    @GetMapping("/by-registered-product")
+    fun shippingCostsByRegisteredProduct(@RequestParam(name = "idProduct") idProduct: Long, @RequestParam(name = "distance") distance: Long): List<BudgetsOutput> {
         val product = ProductsMock.products.find { product -> product.idProduct == idProduct }
-        val budgets = mutableListOf<budgetsOutput>()
         requireNotNull(product)
 
+        val budgets = mutableListOf<BudgetsOutput>()
+
         CompaniesMock.companies.forEach { company ->
-            val fees = FeeRangesMock.feesRanges.find { feesRange -> feesRange.idCompany == company.idCompany && product.weight in feesRange.rangeWeight }
+            val fees = FeeRangesMock.feesRanges.find { feesRange ->
+                feesRange.idCompany == company.idCompany
+                        && product.weight.toDouble() in feesRange.rangeWeight
+            }
             requireNotNull(fees)
-            var cost = calculateFee(fees.fixedFee, fees.kmByKgFee, product, distance)
-            budgets.add(budgetsOutput(companyName = company.name, budget = cost))
+
+            val cost = calculateFee(fees.fixedFee, fees.kmByKgFee, product, distance)
+            budgets.add(BudgetsOutput(companyName = company.name, budget = cost))
         }
+
         return budgets.sortedBy { budget -> budget.budget }
     }
 
-    data class budgetsOutput(
-            var companyName: String,
-            var budget: Double
+    @PostMapping("/by-unregistered-product")
+    fun shippingCostsByUnregisteredProduct(@RequestBody inputData: ProductsInput): List<BudgetsOutput> {
+        val budgets = mutableListOf<BudgetsOutput>()
+
+        CompaniesMock.companies.forEach { company ->
+            val fees = FeeRangesMock.feesRanges.find { feesRange -> feesRange.idCompany == company.idCompany && inputData.product.weight.toDouble() in feesRange.rangeWeight }
+            requireNotNull(fees)
+            val cost = calculateFee(fees.fixedFee, fees.kmByKgFee, inputData.product, inputData.distance)
+            budgets.add(BudgetsOutput(companyName = company.name, budget = cost))
+        }
+
+        return budgets.sortedBy { budget -> budget.budget }
+    }
+
+    @PostMapping("/by-unregistered-products")
+    fun shippingCostsByUnregisteredProducts(@RequestBody inputData: List<ProductsInput>): List<BudgetsOutputByProduct> {
+        val outPutBudgets = mutableListOf<BudgetsOutputByProduct>()
+
+        inputData.forEach { input ->
+            val budgetsList = mutableListOf<BudgetsOutput>()
+
+            CompaniesMock.companies.forEach { company ->
+
+                val fees = FeeRangesMock.feesRanges.find { feesRange ->
+                    feesRange.idCompany == company.idCompany
+                            && input.product.weight.toDouble() in feesRange.rangeWeight
+                }
+                requireNotNull(fees)
+
+                val cost = calculateFee(fees.fixedFee, fees.kmByKgFee, input.product, input.distance)
+
+                budgetsList.add(BudgetsOutput(companyName = company.name, budget = cost))
+            }
+            outPutBudgets.add(BudgetsOutputByProduct(product = input.product, budgets = budgetsList.sortedBy { budget -> budget.budget }))
+        }
+
+        return outPutBudgets
+    }
+
+
+    data class BudgetsOutputByProduct(
+            val product: Product,
+            val budgets: List<BudgetsOutput>
     )
+
+    data class BudgetsOutput(
+            val companyName: String,
+            val budget: Double
+    )
+
+    data class ProductsInput(
+            val product: Product,
+            val distance: Long
+    )
+
 }
