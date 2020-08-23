@@ -12,8 +12,9 @@ object ProductsMock {
             Product(6, "Controle Xbox", 3),
             Product(7, "Kit Gamer", 5),
             Product(8, "Teclado + Fone", 6),
-            Product(9, "Pc Gamer", 35),
-            Product(10, "Fone de ouvido gamer", 1)
+            Product(9, "Pc Gamer", 5),
+            Product(10, "Pc Gamer", 35),
+            Product(11, "Fone de ouvido gamer", 1)
     )
 }
 

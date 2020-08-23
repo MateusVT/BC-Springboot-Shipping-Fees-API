@@ -1,8 +1,8 @@
 package Models
 
 data class Product(
-    var idProduct: Long,
-    var description: String,
-    var weight: Long
+        val idProduct: Long,
+        val description: String,
+        val weight: Long
 )
 
