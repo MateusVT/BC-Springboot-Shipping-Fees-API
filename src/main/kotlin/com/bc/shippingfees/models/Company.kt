@@ -1,7 +1,7 @@
 package Models
 
 data class Company(
-        var idCompany: Long,
-        var name: String
+        val idCompany: Long,
+        val name: String
 )
 
