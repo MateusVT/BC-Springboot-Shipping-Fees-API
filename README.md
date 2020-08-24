@@ -22,7 +22,3 @@ https://documenter.getpostman.com/view/12464160/T1LVA4pP
 ```
 https://shipping-fees-api.herokuapp.com/server-status
 ```
-
-
-
-
