@@ -13,8 +13,11 @@ A simple Springboot Rest API that provides the best shipping budget for a given 
 
 
 ## Documentation
-#### Postman
-### [Postman](https://documenter.getpostman.com/view/12464160/T1LVA4pP)
+### Postman
+```
+https://documenter.getpostman.com/view/12464160/T1LVA4pP
+```
+
 
 
 ## Avaiable on
