@@ -4,9 +4,9 @@ import Models.Company
 
 object CompaniesMock {
     val companies = listOf(
-            Company(0, "BoaDex"),
-            Company(1, "BoaLog"),
-            Company(2, "Transboa")
+            Company(1, "BoaDex"),
+            Company(2, "BoaLog"),
+            Company(3, "Transboa")
     )
 }
 
